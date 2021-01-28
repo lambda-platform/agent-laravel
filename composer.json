@@ -1,0 +1,26 @@
+{
+  "name": "lambda/agent",
+  "description": "Lambda agent user management & authentication module",
+  "type": "module",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "n0m4dz",
+      "email": "tseegii.it@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Lambda\\Agent\\AgentServiceProvider"
+      ],
+      "aliases": {
+        "Agent": "Lambda\\Agent\\Agent"
+      }
+    }
+  },
+  "require": {
+    "zizaco/entrust": "5.2.x-dev"
+  }
+}
