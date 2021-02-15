@@ -1,16 +1,5 @@
 <?php
 
-// Route::namespace('Lambda\Agent\Controllers')
-//     ->prefix('auth')
-//     ->middleware(['web'])
-//     ->group(function () {
-//         Route::get('login', 'AuthController@login')->name('login');
-//         Route::post('login', 'AuthController@postLogin')->name('login.post');
-//         Route::get('logout', 'AuthController@getLogout')->name('logout');
-//         Route::get('forgot', 'PasswordController@forgot')->name('forgot');
-//         Route::get('me', 'AuthController@me');
-//     });
-
 Route::namespace('Lambda\Agent\Controllers')
     ->prefix('agent')
     ->group(function ($router) {
