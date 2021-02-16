@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Facades\Config;
 use Lambda\Agent\Models\User;
 
@@ -43,49 +43,10 @@ class AuthController extends Controller
         }
     }
 
-    public function loginfb()
-    {
-        //Returning login page
-        if (request()->isMethod('get')) {
-            return view('agent::login');
-        }
-
-        //Validating
-        $credentials = request()->only('userid');
-        $validator = Validator::make($credentials, [
-            'userid' => 'required|string|max:255',
-        ]);
-
-
-        if ($validator->fails()) {
-            return response()->json(['status' => false, 'error' => $validator->errors()]);
-        }
-
-        //JWT Auth
-        if (request()->ajax() || request()->wantsJson()) {
-            return $this->jwtLogin($credentials, 'fb');
-        }
-    }
-
-    public function postLogin($credentials)
-    {
-        if (Auth::attempt($credentials)) {
-            return response()->json(['status' => true], 200);
-        } else {
-            dd('I am here not');
-            //  return redirect()->back()->withErrors(['error' => 'Нэвтрэх нэр эсвэл нууц үг буруу байна.'])->withInput();
-        }
-    }
-
     public function jwtLogin($credentials, $logintype)
     {
         try {
-            if ($logintype == 'form') {
-                $token = JWTAuth::attempt($credentials, ['exp' => Carbon::now()->addWeek()->timestamp]);
-            } else if ($logintype == 'fb') {
-                $user = User::where('fb_id', $credentials['userid'])->first();
-                $token = JWTAuth::fromUser($user, ['exp' => Carbon::now()->addWeek()->timestamp]);
-            }
+            $token = auth()->attempt($credentials, ['exp' => Carbon::now()->addWeek()->timestamp]);
         } catch (JWTException $e) {
             return response()->json(['status' => false, 'error' => 'Could not authenticate', 'exception' => $e->getMessage()], 500);
         }
@@ -94,15 +55,14 @@ class AuthController extends Controller
             return response()->json(['status' => false, 'error' => 'Unauthorized'], 401);
         } else {
             $meta = $this->respondWithToken($token);
-
             return response()
                 ->json([
                     'status' => true,
                     'data' => request()->user(),
                     'meta' => $meta,
-                    'path' => $logintype == 'fb'?$user->role:$this->checkRole(auth()->user()->role),
+                    'path' => $this->checkRole(auth()->user()->role),
                 ], 200)
-                ->withCookie(cookie('token', $token, auth()->factory()->getTTL() * 86400));
+                ->withCookie(cookie('token', $token, 86400));
         }
     }
 
@@ -131,21 +91,21 @@ class AuthController extends Controller
                     } else {
                         return response()->json(['status' => false, 'error' => 'Unauthorized'], 401);
                     }
-
                 } else {
                     return response()->json(['status' => false, 'error' => 'Unauthorized'], 401);
                 }
             }
         }
-
         return $defaultRedirect;
     }
 
     public function logout()
     {
         auth()->logout();
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json(['message' => 'Successfully logged out']);
+        }
         return redirect()->to('auth/login');
-        // return response()->json(['message' => 'Successfully logged out']);
     }
 
     public function refresh()
@@ -157,8 +117,8 @@ class AuthController extends Controller
     {
         return response()->json([
             'access_token' => $token,
-            'token_type' => 'Agent',
-            'expires_in' => auth()->factory()->getTTL() * 86400,
+            'token_type' => 'Bearer',
+            'expires_in' => 86400,
         ]);
     }
 

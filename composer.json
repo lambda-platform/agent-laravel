@@ -21,6 +21,7 @@
     }
   },
   "require": {
-    "zizaco/entrust": "5.2.x-dev"
+    "zizaco/entrust": "5.2.x-dev",
+    "tymon/jwt-auth": "^1.0"
   }
 }
