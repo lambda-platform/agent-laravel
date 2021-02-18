@@ -4,18 +4,17 @@ namespace Lambda\Agent\Controllers;
 
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Facades\Config;
-use Lambda\Agent\Models\User;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
     public function __construct()
     {
-//        $this->middleware('jwt', ['except' => ['login', 'asyncLogin']]);
+        $this->middleware('jwt', ['except' => ['login', 'asyncLogin']]);
     }
 
     public function login()
@@ -32,21 +31,21 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-
         if ($validator->fails()) {
             return response()->json(['status' => false, 'error' => $validator->errors()]);
         }
 
         //JWT Auth
         if (request()->ajax() || request()->wantsJson()) {
-            return $this->jwtLogin($credentials, 'form');
+            return $this->jwtLogin($credentials);
         }
     }
 
-    public function jwtLogin($credentials, $logintype)
+    public function jwtLogin($credentials)
     {
         try {
-            $token = auth()->attempt($credentials, ['exp' => Carbon::now()->addWeek()->timestamp]);
+//            $token = JWTAuth::attempt($credentials, ['exp' => Carbon::now()->addWeek()->timestamp]);
+            $token = auth('api')->attempt($credentials, ['exp' => Carbon::now()->addWeek()->timestamp]);
         } catch (JWTException $e) {
             return response()->json(['status' => false, 'error' => 'Could not authenticate', 'exception' => $e->getMessage()], 500);
         }
@@ -55,6 +54,8 @@ class AuthController extends Controller
             return response()->json(['status' => false, 'error' => 'Unauthorized'], 401);
         } else {
             $meta = $this->respondWithToken($token);
+//            JWTAuth::parseToken()->authenticate();
+            JWTAuth::setToken($token);
             return response()
                 ->json([
                     'status' => true,
@@ -62,7 +63,8 @@ class AuthController extends Controller
                     'meta' => $meta,
                     'path' => $this->checkRole(auth()->user()->role),
                 ], 200)
-                ->withCookie(cookie('token', $token, 86400));
+                ->header('Authotization', "bearer " . $token)
+                ->withCookie(cookie('token', $token, auth()->factory()->getTTL() * 86400));
         }
     }
 
@@ -117,8 +119,8 @@ class AuthController extends Controller
     {
         return response()->json([
             'access_token' => $token,
-            'token_type' => 'Bearer',
-            'expires_in' => 86400,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
 

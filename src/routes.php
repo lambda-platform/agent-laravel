@@ -23,7 +23,6 @@ Route::namespace('Lambda\Agent\Controllers')
     ->prefix('auth')
     ->group(function ($router) {
         $router->match(['get', 'post'], 'login', 'AuthController@login');
-        $router->post('loginfb', 'AuthController@loginfb');
         $router->get('/', 'AuthController@login');
         $router->get('/{any}', 'AuthController@login');
         $router->post('logout', 'AuthController@logout');

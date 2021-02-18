@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable implements JWTSubject
 {
-    protected $keyType = 'char';
+//    protected $keyType = 'char';
 
     use Notifiable;
     use SoftDeletes;

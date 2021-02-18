@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Config;
 
 class AgentHelper
 {
-
     public $title = '';
     public $domain = '';
     public $favicon = '';
@@ -27,7 +26,5 @@ class AgentHelper
         $this->bg = $config['bg'];
         $this->copyright = $config['copyright'];
         $this->logo = $config['logo'];
-
     }
-
 }
