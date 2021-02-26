@@ -19,5 +19,10 @@
         "Agent": "Lambda\\Agent\\Agent"
       }
     }
+  },
+  "autoload": {
+    "psr-4": {
+      "Lambda\\Agent\\": "src"
+    }
   }
 }
