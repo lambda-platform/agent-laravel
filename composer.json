@@ -1,5 +1,5 @@
 {
-  "name": "lambda/agent",
+  "name": "lambda-platform/agent",
   "description": "Lambda agent user management & authentication module",
   "type": "module",
   "license": "MIT",
