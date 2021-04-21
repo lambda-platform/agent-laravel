@@ -89,7 +89,7 @@ class AuthController extends Controller
                 if ($user_group->permissions) {
                     $permissions = json_decode($user_group->permissions);
                     if ($permissions->default_menu) {
-                        return $defaultRedirect . '/#/p/' . $permissions->default_menu;
+                        return $defaultRedirect . '/' . $permissions->default_menu;
                     } else {
                         return response()->json(['status' => false, 'error' => 'Unauthorized'], 401);
                     }
