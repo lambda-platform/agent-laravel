@@ -24,8 +24,5 @@
     "psr-4": {
       "Lambda\\Agent\\": "src"
     }
-  },
-  "require": {
-    "tymon/jwt-auth": "^0.5.12"
   }
 }
