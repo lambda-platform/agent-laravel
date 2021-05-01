@@ -56,6 +56,7 @@ class AuthController extends Controller
             $meta = $this->respondWithToken($token);
 //            JWTAuth::parseToken()->authenticate();
             JWTAuth::setToken($token);
+            setcookie("token", $token, time() + 31556926, '/', NULL, 0);
             return response()
                 ->json([
                     'status' => true,
@@ -63,8 +64,8 @@ class AuthController extends Controller
                     'meta' => $meta,
                     'path' => $this->checkRole(auth()->user()->role),
                 ], 200)
-                ->header('Authotization', "bearer " . $token)
-                ->withCookie(cookie('token', $token, auth()->factory()->getTTL() * 86400));
+                ->header('Authotization', "bearer " . $token);
+//                ->withCookie(cookie('token', $token, auth()->factory()->getTTL() * 86400));
         }
     }
 
@@ -89,7 +90,7 @@ class AuthController extends Controller
                 if ($user_group->permissions) {
                     $permissions = json_decode($user_group->permissions);
                     if ($permissions->default_menu) {
-                        return $defaultRedirect . '/' . $permissions->default_menu;
+                        return $defaultRedirect . $permissions->default_menu;
                     } else {
                         return response()->json(['status' => false, 'error' => 'Unauthorized'], 401);
                     }
