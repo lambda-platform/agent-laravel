@@ -3,14 +3,11 @@
 namespace Lambda\Agent\Middleware;
 
 use Closure;
-use http\Exception;
-use Illuminate\Session\TokenMismatchException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
-use Tymon\JWTAuth\Token;
 
 class JWT extends BaseMiddleware
 {
@@ -24,14 +21,17 @@ class JWT extends BaseMiddleware
      */
     public function handle($request, Closure $next)
     {
+
         $token = str_replace('Bearer ', "", $_COOKIE['token']);
+
         try {
             JWTAuth::setToken($token)->authenticate();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if ($e instanceof TokenInvalidException) {
                 $status = 401;
                 $message = 'This token is invalid. Please Login';
-                return response()->json(compact('status', 'message'), 401);
+                return $next($request);
+                //return response()->json(compact('status', 'message'), 401);
             } else if ($e instanceof TokenExpiredException) {
                 try {
                     $refreshed = JWTAuth::refresh(JWTAuth::getToken());
