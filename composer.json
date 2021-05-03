@@ -24,5 +24,11 @@
     "psr-4": {
       "Lambda\\Agent\\": "src"
     }
+  },
+  "require": {
+    "tymon/jwt-auth": "dev-develop"
+  },
+  "replace": {
+    "lcobucci/jwt": "*"
   }
 }
