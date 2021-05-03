@@ -21,7 +21,7 @@ class JWT extends BaseMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if ($_COOKIE['token']) {
+        if (isset($_COOKIE['token'])) {
             $token = str_replace('Bearer ', "", $_COOKIE['token']);
 
             try {
