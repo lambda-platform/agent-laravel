@@ -94,7 +94,7 @@ class AuthController extends Controller
                         {
                             return $defaultRedirect . $permissions->default_menu;
                         }
-                        return $defaultRedirect .'#/'. $permissions->default_menu;
+                        return $defaultRedirect .'#/p/'. $permissions->default_menu;
                     } else {
                         return response()->json(['status' => false, 'error' => 'Unauthorized'], 401);
                     }
