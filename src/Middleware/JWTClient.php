@@ -10,7 +10,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
 use Tymon\JWTAuth\Token;
 
-class JWT extends BaseMiddleware
+class JWTClient extends BaseMiddleware
 {
     /**
      * Handle an incoming request.
@@ -37,9 +37,11 @@ class JWT extends BaseMiddleware
                         JWTAuth::setToken($refreshed)->toUser();
                         $request->headers->set('Authorization', 'Bearer ' . $refreshed);
                     } catch (JWTException $e) {
+                        return $next($request);
                         return response()->json([
+
                             'code' => 103,
-                            'message' => 'Token cannot be refreshed, please Login again'
+                            'message' => $e->getMessage()
                         ]);
                     }
                 } else {
